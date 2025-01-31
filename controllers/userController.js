@@ -54,5 +54,34 @@ router.delete('/usuarios/:id', async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 });
+router.post('/login', [
+    check('correo').isEmail().withMessage('Correo inválido'),
+    check('contrasena').not().isEmpty().withMessage('La contraseña es requerida'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ error: errors.array() });
+    }
+
+    try {
+        const { correo, contrasena } = req.body;
+
+        // Verifica si el usuario existe y la contraseña es correcta
+        const usuarios = await usuarioService.getAllUsuarios();
+        const usuario = usuarios.find(u => u.correo === correo && u.contrasena === contrasena);
+
+        if (!usuario) {
+            return res.status(401).json({ error: 'Correo o contraseña incorrectos' });
+        }
+
+        // Aquí podrías generar un token JWT, pero en este ejemplo solo devolvemos al usuario.
+        // Si quieres usar JWT, sería necesario instalar y configurar la librería jsonwebtoken.
+        // Por ahora, retornamos el usuario para indicar un login exitoso.
+        res.status(200).json({ message: 'Inicio de sesión exitoso', usuario });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 export default router;
