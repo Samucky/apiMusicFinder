@@ -1,4 +1,4 @@
-git initimport express from 'express';
+import express from 'express';
 import usuarioRouter from './controllers/userController.js';
 import profesorRouter from './controllers/profesorController.js';
 
